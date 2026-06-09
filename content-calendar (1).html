@@ -1,0 +1,464 @@
+<!-- Content Calendar — 500 AI Industry Lab -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Content Calendar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#ffffff;--soft:#fbfbfa;--hover:#f6f6f5;
+    --ink:#1a1a1a;--ink2:#5c5c5c;--muted:#9b9b97;
+    --line:#ececea;--line2:#f4f4f2;
+    --p1:#b15a39;--p2:#3a7184;--p3:#a37a2e;--ops:#9a9a96;
+    --p1-s:#f8efea;--p2-s:#eef3f5;--p3-s:#f6f1e6;--ops-s:#f2f2f0;
+    --sans:"Inter",system-ui,-apple-system,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);
+    font-size:14px;line-height:1.45;-webkit-font-smoothing:antialiased;letter-spacing:-.005em}
+  .wrap{max-width:1280px;margin:0 auto;padding:48px 32px 110px}
+  .eyebrow{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:500}
+
+  /* Header */
+  header.top{display:flex;justify-content:space-between;align-items:flex-end;gap:32px;flex-wrap:wrap;
+    padding-bottom:26px;border-bottom:1px solid var(--line)}
+  h1{font-weight:600;font-size:30px;letter-spacing:-.025em;margin:11px 0 6px;line-height:1.05}
+  .sub{font-size:14px;color:var(--ink2);max-width:560px}
+  .progress{min-width:172px}
+  .progress .row1{display:flex;justify-content:flex-end;align-items:baseline;gap:8px;font-variant-numeric:tabular-nums}
+  .progress .big{font-size:22px;font-weight:600;letter-spacing:-.02em}
+  .progress .big .of{color:var(--muted);font-weight:450;font-size:15px}
+  .pbar{height:4px;border-radius:4px;background:var(--line);margin-top:9px;overflow:hidden}
+  .pbar i{display:block;height:100%;width:0;background:var(--ink);transition:width .45s cubic-bezier(.2,.7,.2,1)}
+  .progress .row2{display:flex;justify-content:flex-end;gap:8px;margin-top:8px;font-size:12px;color:var(--muted)}
+  #saved{color:var(--ink2)}
+
+  /* Toolbar */
+  .toolbar{display:flex;flex-wrap:wrap;gap:18px;align-items:center;justify-content:space-between;margin-top:24px}
+  .legend{display:flex;flex-wrap:wrap;gap:18px;font-size:13px;color:var(--ink2)}
+  .lg{display:flex;align-items:center;gap:8px}
+  .lg .sw{width:9px;height:9px;border-radius:50%}
+  .lg .sw.p1{background:var(--p1)} .lg .sw.p2{background:var(--p2)}
+  .lg .sw.doc{background:var(--p3)} .lg .sw.ops{background:var(--ops)}
+  .lg .n{color:var(--muted);font-variant-numeric:tabular-nums}
+  .actions{display:flex;gap:6px;flex-wrap:wrap}
+  .btn{font-family:var(--sans);font-size:12.5px;background:transparent;color:var(--ink2);
+    border:1px solid var(--line);border-radius:7px;padding:8px 13px;cursor:pointer;transition:.14s;font-weight:450}
+  .btn:hover{border-color:var(--ink2);color:var(--ink)}
+  .btn.warn:hover{border-color:var(--p1);color:var(--p1)}
+
+  .hint{font-size:12.5px;color:var(--muted);margin-top:18px;line-height:1.55}
+  .hint b{color:var(--ink2);font-weight:500}
+
+  /* Parking lot */
+  .tray-wrap{margin-top:8px}
+  .tray-head{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:10px}
+  .th-hint{font-size:12px;color:var(--muted);margin-top:5px;line-height:1.5}
+  .th-hint b{color:var(--ink2);font-weight:500}
+  .tray-actions{margin:0 0 11px}
+  .saved-tag{font-size:12px;color:var(--muted);margin-left:6px;align-self:center}
+  .addrow{display:flex;gap:7px;align-items:center}
+  .addrow input,.addrow select{font-family:var(--sans);font-size:13px;background:var(--bg);
+    border:1px solid var(--line);border-radius:7px;color:var(--ink);padding:8px 10px}
+  .addrow input{min-width:210px}
+  .addrow input::placeholder{color:var(--muted)}
+  .addrow select{cursor:pointer;color:var(--ink2)}
+  .addrow input:focus,.addrow select:focus{outline:none;border-color:var(--ink2)}
+  .tray{display:flex;flex-wrap:wrap;gap:8px;min-height:58px;background:var(--soft);
+    border:1px solid var(--line);border-radius:10px;padding:11px}
+  .tray.empty{align-items:center}
+  .tray.empty::before{content:"Empty. New ideas land here — drag them onto a day to schedule.";
+    font-size:12.5px;color:var(--muted)}
+  .tray.over{background:var(--p2-s);border-color:var(--p2)}
+
+  /* Calendar */
+  .cal-scroll{overflow-x:auto;margin-top:24px;border:1px solid var(--line);border-radius:12px;background:var(--bg)}
+  .cal{min-width:940px}
+  .colhead{display:grid;grid-template-columns:148px repeat(5,1fr);border-bottom:1px solid var(--line);background:var(--soft)}
+  .colhead .ch{padding:11px 14px;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:500}
+  .colhead .ch.first{position:sticky;left:0;background:var(--soft);z-index:4}
+  .row{display:grid;grid-template-columns:148px repeat(5,1fr);border-bottom:1px solid var(--line)}
+  .row:last-child{border-bottom:none}
+
+  .wk-label{position:sticky;left:0;z-index:3;background:var(--bg);border-right:1px solid var(--line);
+    padding:14px;display:flex;flex-direction:column;gap:6px}
+  .row.now .wk-label{box-shadow:inset 2px 0 0 var(--ink)}
+  .wk-no{font-weight:600;font-size:15px;letter-spacing:-.01em;display:flex;align-items:center;gap:8px}
+  .wk-this{font-size:10.5px;color:var(--muted);font-weight:450}
+  .wk-dates{font-size:12px;color:var(--ink2);font-variant-numeric:tabular-nums}
+  .wk-phase{font-size:10.5px;color:var(--ink2);display:inline-flex;align-items:center;gap:6px;margin-top:1px}
+  .wk-phase .d{width:6px;height:6px;border-radius:50%;background:var(--muted)}
+  .wk-phase.pre .d{background:var(--p3)} .wk-phase.prod .d{background:var(--p2)}
+  .wk-phase.post .d{background:var(--p1)} .wk-phase.deliv .d{background:var(--ops)}
+  .wk-gate{font-size:10.5px;color:var(--p3);display:flex;align-items:center;gap:6px}
+  .wk-gate .dia{width:6px;height:6px;border:1px solid var(--p3);transform:rotate(45deg)}
+
+  .cell{border-right:1px solid var(--line2);min-height:118px;display:flex;flex-direction:column;cursor:pointer;position:relative;transition:background .12s}
+  .cell:last-child{border-right:none}
+  .cell:hover{background:var(--soft)}
+  .cell-head{display:flex;align-items:center;justify-content:space-between;padding:9px 11px 5px;pointer-events:none;min-height:26px}
+  .cell-head .dn{font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:500}
+  .ship-badge{font-size:9.5px;letter-spacing:.05em;font-weight:600;padding:2px 6px;border-radius:4px;display:none}
+  .cell.ship-p1{box-shadow:inset 0 2px 0 var(--p1)} .cell.ship-p1 .ship-badge{display:inline-block;background:var(--p1-s);color:var(--p1)}
+  .cell.ship-p2{box-shadow:inset 0 2px 0 var(--p2)} .cell.ship-p2 .ship-badge{display:inline-block;background:var(--p2-s);color:var(--p2)}
+  .cell.ship-doc{box-shadow:inset 0 2px 0 var(--p3)} .cell.ship-doc .ship-badge{display:inline-block;background:var(--p3-s);color:var(--p3)}
+  .cell-body{flex:1;padding:1px 8px 9px;display:flex;flex-direction:column;gap:5px}
+  .cell-hint{font-size:10px;color:transparent;text-align:center;padding-bottom:7px;transition:.12s;pointer-events:none}
+  .cell:hover .cell-hint{color:var(--muted)}
+  .cell.over{background:var(--p2-s)}
+
+  /* Block */
+  .block{display:flex;gap:8px;align-items:flex-start;padding:7px 8px;border-radius:7px;background:var(--bg);
+    border:1px solid var(--line);border-left:2px solid var(--ops);touch-action:none;cursor:grab;
+    user-select:none;transition:box-shadow .12s,border-color .12s}
+  .block:hover{box-shadow:0 1px 0 rgba(0,0,0,.03),0 2px 8px rgba(0,0,0,.04);border-color:#e0e0dd}
+  .block:active{cursor:grabbing}
+  .block.p1{border-left-color:var(--p1)} .block.p2{border-left-color:var(--p2)}
+  .block.doc{border-left-color:var(--p3)} .block.ops{border-left-color:var(--ops)}
+  .block.dragging{opacity:.3;pointer-events:none}
+  .block .box{width:15px;height:15px;border-radius:4px;border:1.5px solid #d6d6d3;flex:none;margin-top:1px;
+    display:flex;align-items:center;justify-content:center;font-size:10px;color:transparent;cursor:pointer;transition:.12s}
+  .block .box:hover{border-color:var(--ink2)}
+  .block .btxt{font-size:12.5px;line-height:1.32;flex:1;min-width:0;color:var(--ink)}
+  .block .btxt .pill{font-size:9.5px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:1px;font-weight:500}
+  .block .rm{flex:none;width:17px;height:17px;border-radius:5px;border:none;background:transparent;color:#c4c4c0;
+    cursor:pointer;font-size:14px;line-height:1;display:flex;align-items:center;justify-content:center;margin-top:-1px}
+  .block .rm:hover{color:var(--p1);background:var(--p1-s)}
+  .block.done{opacity:.55}
+  .block.done .btxt{text-decoration:line-through;text-decoration-color:var(--muted);color:var(--ink2)}
+  .block.done .box{color:#fff;border-color:transparent}
+  .block.done.p1 .box{background:var(--p1)} .block.done.p2 .box{background:var(--p2)}
+  .block.done.doc .box{background:var(--p3)} .block.done.ops .box{background:var(--ops)}
+
+  .ghost{position:fixed;z-index:9999;pointer-events:none;box-shadow:0 8px 24px rgba(0,0,0,.14);opacity:.97;background:var(--bg)}
+
+  :focus-visible{outline:2px solid var(--p2);outline-offset:2px}
+  @media (max-width:640px){
+    .wrap{padding:32px 18px 90px}
+    .progress{min-width:0}.progress .row1,.progress .row2{justify-content:flex-start}
+    .addrow input{min-width:120px}
+  }
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div class="wrap">
+  <div class="tray-wrap">
+    <div class="tray-head">
+      <div class="th-left">
+        <div class="eyebrow">drag &rarr; calendar</div>
+        <div class="th-hint">Drag a block onto a day &middot; tap <b>&#10003;</b> to check off &middot; <b>&times;</b> to delete &middot; click a day to flag a ship day</div>
+      </div>
+      <div class="addrow">
+        <select id="newPillar">
+          <option value="p1">Grassroots</option>
+          <option value="p2">Authority</option>
+          <option value="doc">Documentary</option>
+          <option value="ops">Sync / review</option>
+        </select>
+        <input id="newText" placeholder="New video idea…" maxlength="120">
+        <button class="btn" id="addIdea">Add</button>
+      </div>
+    </div>
+    <div class="actions tray-actions">
+      <button class="btn" id="copy">Copy summary</button>
+      <button class="btn" id="export">Export</button>
+      <button class="btn" id="import">Import</button>
+      <button class="btn warn" id="reset">Reset</button>
+      <span id="saved" class="saved-tag">saved</span>
+    </div>
+    <div class="tray dropzone" id="tray" data-cell="tray"></div>
+  </div>
+
+  <div class="cal-scroll">
+    <div class="cal" id="cal">
+      <div class="colhead">
+        <div class="ch first">Week</div>
+        <div class="ch">Mon</div><div class="ch">Tue</div><div class="ch">Wed</div><div class="ch">Thu</div><div class="ch">Fri</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const P={p1:"Grassroots",p2:"Authority",doc:"Documentary",ops:"Sync / review"};
+const DAYS=["MON","TUE","WED","THU","FRI"];
+const SHIP_LABEL={p1:"GRASSROOTS",p2:"AUTHORITY",doc:"DOCUMENTARY"};
+const SHIP_CYCLE=["","p1","p2","doc"];
+const CURRENT_WEEK=1;
+
+const WEEKMETA=[
+ {n:1,dates:["Jun 8","Jun 12"],phase:"pre",gate:"Kickoff"},
+ {n:2,dates:["Jun 15","Jun 19"],phase:"pre",gate:"Pre-pro locked"},
+ {n:3,dates:["Jun 22","Jun 26"],phase:"prod",gate:null},
+ {n:4,dates:["Jun 29","Jul 3"],phase:"prod",gate:"Coderpuff spotlight"},
+ {n:5,dates:["Jul 6","Jul 10"],phase:"prod",gate:null},
+ {n:6,dates:["Jul 13","Jul 17"],phase:"prod",gate:"Photography wrap"},
+ {n:7,dates:["Jul 20","Jul 24"],phase:"post",gate:null},
+ {n:8,dates:["Jul 27","Jul 31"],phase:"post",gate:"Rough cut v1"},
+ {n:9,dates:["Aug 3","Aug 7"],phase:"post",gate:"Picture lock"},
+ {n:10,dates:["Aug 10","Aug 14"],phase:"deliv",gate:null},
+ {n:11,dates:["Aug 17","Aug 21"],phase:"deliv",gate:"Final delivery"}
+];
+const PHASE_NAME={pre:"Pre-production",prod:"Production",post:"Post",deliv:"Delivery"};
+
+const SEED=[
+ [[["ops","Monday sync — lock the 11-week board & pillar cadence"],["doc","Finalize logline + treatment (irony · obstacle · choice)"]],
+  [["doc","Map 12–15 doc subjects; lock central question — grassroots vs top-down"],["p1","Scout + shortlist 5 Grassroots subjects"]],
+  [["p1","Film Grassroots #1 — street vendor using AI to translate menus"],["p2","Build Authority guest longlist + send first 3 invites"]],
+  [["p1","Edit Grassroots #1"],["doc","Draft shoot schedule + gear / permit checklist"]],
+  [["p1","SHIP Grassroots #1 → malaysian.ai + IG"],["ops","Friday review — plan, treatment & subject map locked"]]],
+ [[["ops","Monday sync — confirm subject + Authority guest"],["doc","Confirm schedule; research US-adoption contrast data"]],
+  [["p1","Film Grassroots #2 — retiree using AI for letters & health"],["doc","Outreach: Coderpuff meetup + 2 key doc subjects"]],
+  [["p1","Edit + SHIP Grassroots #2"],["p2","Lock guest + angle — national AI roadmap"]],
+  [["p2","Film Authority #1 — fintech founder on the AI roadmap"],["doc","Lock the 4-act story outline"]],
+  [["p2","Edit + SHIP Authority #1"],["ops","GATE — pre-production locked (schedule, outreach, outline)"]]],
+ [[["ops","Monday sync + weekly plan"],["doc","Prep street-interview day (Petaling St / Central Market)"]],
+  [["p1","Film Grassroots #3 — accountant automating the books"],["doc","Street-interview shoot 1 — 6–8 vox pops"]],
+  [["p1","Edit + SHIP Grassroots #3"],["p2","Lock guest + angle — AI among SMEs"]],
+  [["p2","Film Authority #2 — SME leader on small-business AI"],["doc","Log + transcribe street footage"]],
+  [["p2","Edit + SHIP Authority #2"],["ops","Friday review — ship audit + doc milestone"]]],
+ [[["ops","Monday sync + weekly plan"],["doc","Prep Coderpuff shoot — access, consent, run-of-show"]],
+  [["p1","Film Grassroots #4 — uni student studying with AI"],["doc","Shoot: Coderpuff women's coding meetup"]],
+  [["p1","Edit + SHIP Grassroots #4"],["p2","Lock guest + angle — AI in financial services"]],
+  [["p2","Film Authority #3 — bank/finance exec on AI regulation"],["doc","Log Coderpuff footage; pick spotlight subjects"]],
+  [["p2","Edit + SHIP Authority #3"],["ops","Friday review — first community spotlight in the can"]]],
+ [[["ops","Monday sync + weekly plan"],["doc","Schedule 2 subject deep-dives (retiree + accountant)"]],
+  [["p1","Film Grassroots #5 — pasar malam seller marketing with AI"],["doc","Subject deep-dive shoot day"]],
+  [["p1","Edit + SHIP Grassroots #5"],["p2","Lock guest + angle — data-centre boom (Johor)"]],
+  [["p2","Film Authority #4 — telco / infra leader on data centres"],["doc","Street-interview shoot 2 — new district"]],
+  [["p2","Edit + SHIP Authority #4"],["ops","Friday review — ship audit + doc milestone"]]],
+ [[["ops","Monday sync — final shot-gap review before wrap"],["doc","List remaining must-get shots (top-down contrast)"]],
+  [["p1","Film Grassroots #6 — gig worker / Grab driver using AI"],["doc","Shoot: top-down contrast (corporate / gov-linked)"]],
+  [["p1","Edit + SHIP Grassroots #6"],["p2","Lock guest + angle — AI startup funding climate"]],
+  [["p2","Film Authority #5 — VC / startup leader on funding"],["doc","Final pickups + KL-texture b-roll"]],
+  [["p2","Edit + SHIP Authority #5"],["ops","GATE — principal photography WRAP"]]],
+ [[["ops","Monday sync — shift to post mode"],["doc","Footage logged + transcribed; build selects bin"]],
+  [["p1","Film Grassroots #7 — kopitiam owner running socials with AI"],["doc","Paper cut — assemble the 4-act arc"]],
+  [["p1","Edit + SHIP Grassroots #7"],["p2","Lock guest + angle — AI in universities"]],
+  [["p2","Film Authority #6 — education leader on AI in classrooms"],["doc","Assembly edit — string out best moments"]],
+  [["p2","Edit + SHIP Authority #6"],["ops","Friday review — assembly edit checkpoint"]]],
+ [[["ops","Monday sync + weekly plan"],["doc","Build rough cut v1 from assembly"]],
+  [["p1","Film Grassroots #8 — nurse / clinic staff using AI"],["doc","Rough cut v1 — full pass"]],
+  [["p1","Edit + SHIP Grassroots #8"],["p2","Lock guest + angle — AI on the factory floor (E&E)"]],
+  [["p2","Film Authority #7 — manufacturing exec on AI in production"],["doc","Mark story gaps → pickup-shot list"]],
+  [["p2","Edit + SHIP Authority #7"],["ops","GATE — rough cut v1 complete"]]],
+ [[["ops","Monday sync — schedule the feedback screening"],["doc","Shoot any pickups identified in v1"]],
+  [["p1","Film Grassroots #9 — teacher planning lessons with AI"],["doc","Cut rough v2 incorporating pickups"]],
+  [["p1","Edit + SHIP Grassroots #9"],["p2","Lock guest + angle — AI & Malaysian content industry"]],
+  [["p2","Film Authority #8 — media / creative leader on AI"],["doc","Feedback screening with the 500 team"]],
+  [["p2","Edit + SHIP Authority #8"],["ops","GATE — picture lock approved"]]],
+ [[["ops","Monday sync + weekly plan"],["doc","Fine cut — tighten pacing to picture lock"]],
+  [["p1","Film Grassroots #10 — artist / designer using AI tools"],["doc","Music + sound design pass"]],
+  [["p1","Edit + SHIP Grassroots #10"],["p2","Lock guest + angle — top-down national AI strategy"]],
+  [["p2","Film Authority #9 — gov-linked tech leader on strategy"],["doc","Colour grade + motion graphics (batik / wau / shophouse)"]],
+  [["p2","Edit + SHIP Authority #9"],["ops","Friday review — fine cut + finishing checkpoint"]]],
+ [[["ops","Monday sync — delivery-week plan"],["doc","Titles, lower-thirds, captions + final export"]],
+  [["p1","Film Grassroots #11 — community figure / NGO worker using AI"],["doc","QC pass — audio, captions, export checks"]],
+  [["p1","Edit + SHIP Grassroots #11"],["p2","Lock guest + angle — what's next for Malaysian AI"]],
+  [["p2","Film Authority #10 — founder reflecting on the road ahead"],["doc","Internal screening + publish the documentary"]],
+  [["p2","Edit + SHIP Authority #10"],["ops","GATE — documentary delivered + 11-week wrap report"]]]
+];
+
+/* ---------- State ---------- */
+let blocks={}, order=[], ship={}, ideaCounter=0;
+const KEY="ccp:plan:v3";
+
+function buildSeed(){
+  blocks={};order=[];ship={};
+  SEED.forEach((wk,wi)=>{
+    wk.forEach((day,di)=>day.forEach((t,ti)=>{
+      const id=`s-${wi+1}-${di}-${ti}`;
+      blocks[id]={pillar:t[0],text:t[1],cell:`c-${wi+1}-${di}`,done:false};
+      order.push(id);
+    }));
+    ship[`c-${wi+1}-2`]="p1";
+    ship[`c-${wi+1}-4`]="p2";
+  });
+}
+function readLocal(){try{const v=localStorage.getItem(KEY);if(v)return JSON.parse(v);}catch(e){}return null;}
+async function readPlan(){
+  const local=readLocal();
+  if(local)return local;
+  try{const r=await window.storage.get(KEY);if(r&&r.value)return JSON.parse(r.value);}catch(e){}
+  return null;
+}
+async function load(){
+  const d=await readPlan();
+  if(d){blocks=d.blocks||{};order=d.order||Object.keys(blocks);ship=d.ship||{};ideaCounter=d.ideaCounter||0;return;}
+  buildSeed();
+}
+function save(){
+  const json=JSON.stringify({blocks,order,ship,ideaCounter});
+  let ok=false;
+  try{localStorage.setItem(KEY,json);ok=true;}catch(e){}
+  try{if(window.storage&&typeof window.storage.set==="function"){const p=window.storage.set(KEY,json);if(p&&p.catch)p.catch(()=>{});ok=true;}}catch(e){}
+  flashSaved(ok);
+}
+function flashSaved(ok){
+  const s=document.getElementById("saved");if(!s)return;
+  if(ok===false){s.textContent="not saved — use Export";s.style.color="var(--p1)";return;}
+  s.style.color="";s.textContent="saving…";clearTimeout(s._t);s._t=setTimeout(()=>{s.textContent="saved";},280);
+}
+
+/* ---------- Build calendar ---------- */
+function buildCal(){
+  const cal=document.getElementById("cal");
+  WEEKMETA.forEach(w=>{
+    const row=document.createElement("div");
+    row.className="row"+(w.n===CURRENT_WEEK?" now":"");
+    const thisWk=w.n===CURRENT_WEEK?'<span class="wk-this">this week</span>':"";
+    let html=`<div class="wk-label">
+        <div class="wk-no">W${String(w.n).padStart(2,"0")}${thisWk}</div>
+        <div class="wk-dates">${w.dates[0]} – ${w.dates[1]}</div>
+      </div>`;
+    DAYS.forEach((dn,di)=>{
+      const cid=`c-${w.n}-${di}`;
+      html+=`<div class="cell dropzone" id="${cid}" data-cell="${cid}">
+          <div class="cell-head"><span class="dn">${dn}</span><span class="ship-badge"></span></div>
+          <div class="cell-body" id="body-${cid}"></div>
+          <div class="cell-hint">click to flag ship day</div>
+        </div>`;
+    });
+    row.innerHTML=html;
+    cal.appendChild(row);
+  });
+  document.querySelectorAll(".cell").forEach(c=>{
+    c.addEventListener("click",e=>{
+      if(e.target.closest(".block"))return;
+      const cid=c.dataset.cell, cur=ship[cid]||"";
+      const next=SHIP_CYCLE[(SHIP_CYCLE.indexOf(cur)+1)%SHIP_CYCLE.length];
+      if(next)ship[cid]=next;else delete ship[cid];
+      applyShip();save();
+    });
+  });
+}
+function applyShip(){
+  document.querySelectorAll(".cell").forEach(c=>{
+    const cid=c.dataset.cell,s=ship[cid];
+    c.classList.remove("ship-p1","ship-p2","ship-doc");
+    const badge=c.querySelector(".ship-badge");
+    if(s){c.classList.add("ship-"+s);badge.textContent=SHIP_LABEL[s];}
+    else badge.textContent="";
+  });
+}
+
+/* ---------- Blocks ---------- */
+function makeBlock(id){
+  const b=blocks[id];
+  const el=document.createElement("div");
+  el.className=`block ${b.pillar}${b.done?" done":""}`;
+  el.dataset.id=id;
+  el.innerHTML=`<span class="box" title="Mark done">✓</span>
+    <span class="btxt"><span class="pill">${P[b.pillar]}</span>${b.text}</span>
+    <button class="rm" title="Delete">×</button>`;
+  el.querySelector(".box").addEventListener("click",ev=>{ev.stopPropagation();b.done=!b.done;renderBlocks();save();});
+  el.querySelector(".rm").addEventListener("click",ev=>{ev.stopPropagation();delete blocks[id];order=order.filter(x=>x!==id);renderBlocks();save();});
+  el.addEventListener("pointerdown",ev=>onDown(ev,el,id));
+  return el;
+}
+function renderBlocks(){
+  document.querySelectorAll(".cell-body").forEach(b=>b.innerHTML="");
+  const tray=document.getElementById("tray");tray.innerHTML="";
+  order=order.filter(id=>blocks[id]);
+  Object.keys(blocks).forEach(id=>{if(!order.includes(id))order.push(id);});
+  order.forEach(id=>{
+    const b=blocks[id];if(!b)return;
+    const zone=b.cell==="tray"?tray:document.getElementById("body-"+b.cell);
+    if(zone)zone.appendChild(makeBlock(id));
+    else{b.cell="tray";tray.appendChild(makeBlock(id));}
+  });
+  tray.classList.toggle("empty",tray.children.length===0);
+}
+
+/* ---------- Pointer drag ---------- */
+let drag=null;
+function onDown(e,el,id){
+  if(e.target.closest(".box")||e.target.closest(".rm"))return;
+  if(e.button&&e.button!==0)return;
+  const r=el.getBoundingClientRect();
+  drag={id,el,sx:e.clientX,sy:e.clientY,ox:e.clientX-r.left,oy:e.clientY-r.top,w:r.width,moved:false,ghost:null,zone:null};
+  el.setPointerCapture(e.pointerId);
+  el.addEventListener("pointermove",onMove);
+  el.addEventListener("pointerup",onUp);
+  el.addEventListener("pointercancel",onUp);
+}
+function onMove(e){
+  if(!drag)return;
+  const dx=e.clientX-drag.sx,dy=e.clientY-drag.sy;
+  if(!drag.moved&&Math.hypot(dx,dy)<6)return;
+  if(!drag.moved){
+    drag.moved=true;drag.el.classList.add("dragging");
+    const g=drag.el.cloneNode(true);g.className=drag.el.className.replace("dragging","").trim()+" ghost";
+    g.style.width=drag.w+"px";document.body.appendChild(g);drag.ghost=g;
+  }
+  drag.ghost.style.left=(e.clientX-drag.ox)+"px";
+  drag.ghost.style.top=(e.clientY-drag.oy)+"px";
+  const under=document.elementFromPoint(e.clientX,e.clientY);
+  const zone=under?under.closest(".dropzone"):null;
+  document.querySelectorAll(".dropzone.over").forEach(z=>z.classList.remove("over"));
+  if(zone)zone.classList.add("over");
+  drag.zone=zone;
+}
+function onUp(){
+  if(!drag)return;
+  drag.el.removeEventListener("pointermove",onMove);
+  drag.el.removeEventListener("pointerup",onUp);
+  drag.el.removeEventListener("pointercancel",onUp);
+  const moved=drag.moved,zone=drag.zone,id=drag.id;
+  if(moved&&zone){blocks[id].cell=zone.dataset.cell;order=order.filter(x=>x!==id);order.push(id);save();}
+  if(drag.ghost)drag.ghost.remove();
+  document.querySelectorAll(".dropzone.over").forEach(z=>z.classList.remove("over"));
+  if(drag.el)drag.el.classList.remove("dragging");
+  drag=null;
+  if(moved)renderBlocks();
+}
+
+/* ---------- Actions ---------- */
+function addIdea(){
+  const txt=document.getElementById("newText").value.trim();if(!txt)return;
+  const pil=document.getElementById("newPillar").value,id="n-"+(++ideaCounter);
+  blocks[id]={pillar:pil,text:txt,cell:"tray",done:false};order.push(id);
+  document.getElementById("newText").value="";renderBlocks();save();
+}
+function copySummary(){
+  let out=`500 AI Industry Lab — Content Calendar\nJun 8 – Aug 21, 2026\n`;
+  WEEKMETA.forEach(w=>{
+    out+=`\nW${String(w.n).padStart(2,"0")} · ${w.dates[0]}–${w.dates[1]} · ${PHASE_NAME[w.phase]}${w.gate?" · "+w.gate:""}\n`;
+    DAYS.forEach((dn,di)=>{
+      const cid=`c-${w.n}-${di}`,items=order.filter(id=>blocks[id]&&blocks[id].cell===cid);
+      const sf=ship[cid]?` [${SHIP_LABEL[ship[cid]]} SHIP]`:"";
+      if(items.length||ship[cid]){out+=`  ${dn}${sf}\n`;items.forEach(id=>{const b=blocks[id];out+=`    ${b.done?"[x]":"[ ]"} (${P[b.pillar]}) ${b.text}\n`;});}
+    });
+  });
+  const tray=order.filter(id=>blocks[id]&&blocks[id].cell==="tray");
+  if(tray.length){out+=`\nUnscheduled:\n`;tray.forEach(id=>{const b=blocks[id];out+=`  • (${P[b.pillar]}) ${b.text}\n`;});}
+  copyText(out,"copy","Copied");
+}
+function exportPlan(){copyText(JSON.stringify({blocks,order,ship,ideaCounter}),"export","Copied JSON");}
+function importPlan(){
+  const v=prompt("Paste an exported plan (JSON):");if(!v)return;
+  try{const d=JSON.parse(v);blocks=d.blocks||{};order=d.order||Object.keys(blocks);ship=d.ship||{};ideaCounter=d.ideaCounter||0;renderBlocks();applyShip();save();}
+  catch(e){alert("That didn't look like a valid plan.");}
+}
+function copyText(t,btnId,msg){
+  const done=()=>flash(btnId,msg);
+  if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(t).then(done,()=>fb());
+  else fb();
+  function fb(){const a=document.createElement("textarea");a.value=t;document.body.appendChild(a);a.select();try{document.execCommand("copy");done();}catch(e){}a.remove();}
+}
+function flash(btnId,msg){const b=document.getElementById(btnId),o=b.textContent;b.textContent=msg;setTimeout(()=>b.textContent=o,1100);}
+
+/* ---------- Init ---------- */
+(async function(){
+  await load();
+  buildCal();renderBlocks();applyShip();
+  document.getElementById("addIdea").addEventListener("click",addIdea);
+  document.getElementById("newText").addEventListener("keydown",e=>{if(e.key==="Enter")addIdea();});
+  document.getElementById("copy").addEventListener("click",copySummary);
+  document.getElementById("export").addEventListener("click",exportPlan);
+  document.getElementById("import").addEventListener("click",importPlan);
+  document.getElementById("reset").addEventListener("click",()=>{if(confirm("Reset the whole calendar to the original plan?")){buildSeed();renderBlocks();applyShip();save();}});
+})();
+</script>
